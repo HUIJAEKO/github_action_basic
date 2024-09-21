@@ -1,5 +1,5 @@
 #Workflow이름
-name: Github Action 실행시켜보기
+name: Deploy To EC2
 
 #master branch에 push될 때 아래 Workflow를 실행
 on:
@@ -14,10 +14,16 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Hello World 찍기
-        run: echo "Hello World"
-
-      - name: 여러 명령어
-        run: |
-          echo "Good"
-          echo "Morning"
+      - name: SSH로 EC2 접속
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{secrets.EC2_HOST}}
+          username: ${{secrets.EC2_USERNAME}}
+          key: ${{secrets.EC2_PRIVATE_KEY}}
+          script_stop: true
+          script: |
+            cd /home/ubuntu/github-action-basic
+            git pull origin master
+            ./gradlew clean build
+            sudo fuser -k -n tcp 8080 || true
+            nohup java -jar build/libs/*SNAPSHOT.jar > ./output.log 2>&1 &
