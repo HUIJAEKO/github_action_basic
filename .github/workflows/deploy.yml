@@ -1,11 +1,16 @@
+#Workflow이름
 name: Github Action 실행시켜보기
 
+#master branch에 push될 때 아래 Workflow를 실행
 on:
   push:
     branches:
       - master
+
 jobs:
+  #Job을 실행하기 위한 id
   My-Deploy-Job:
+    #Github Action을 실행시킬 서버 종류 선택
     runs-on: ubuntu-latest
 
     steps:
